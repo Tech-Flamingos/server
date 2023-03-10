@@ -138,3 +138,25 @@ Link to an image of the UML for your application and response to events
       
     + How will you communicate that it’s time to merge?
       - During end of day meeting
+
+
+
+Group Project: Pitch Ideas
+
+1. Word guessing game like Hangman, guess the word (similar to headbanZ)
+
+2. A text-based adventure game using ChatGPT where you will develop a storyline and include challenges which will change the outcome of the story everytime.
+
+Name of Project
+
+
+Summary of idea.
+
+
+What problem or pain point does it solve? a. Keep it high level without going into too much detail. (3-4 sentences is enough)
+Minimum Viable Product (MVP) definition.
+What is the minimum required for you to present on your demo day?
+
+
+
+      
