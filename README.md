@@ -143,19 +143,34 @@ Link to an image of the UML for your application and response to events
 
 Group Project: Pitch Ideas
 
-1. Word guessing game like Hangman, guess the word (similar to headbanZ)
+1. Word guessing game, guess the word (similar to headbanZ)
 
 2. A text-based adventure game using ChatGPT where you will develop a storyline and include challenges which will change the outcome of the story everytime.
 
-Name of Project
+Name of Project:
 
+The Timeless Tower
 
 Summary of idea.
 
+A text-based adventure game where users can provide input for the story where they can choose between two answers and that will change the output of your story. There will be host who will start the game and he will have Admin access. Attendees can join the game and can post answers. 
 
 What problem or pain point does it solve? a. Keep it high level without going into too much detail. (3-4 sentences is enough)
+
+The timeless Tower is an interactive, fun adventure game that allows users to direct the story. Users are given a choice to select between few options. At the end of the quiz the host will end the game and the user can see the results of their adventure.
+
+
 Minimum Viable Product (MVP) definition.
+
+- Sign in and sign out should work.
+- Able to pull data from ChatGPT.
+- ACL - Host will have "Admin" access and attendees will have access to read and post their responses.
+- Socket.io should work as expected.
+
 What is the minimum required for you to present on your demo day?
+
+- Presentation deck completed.
+- Can play the game from start to finish with atleast one player.
 
 
 
