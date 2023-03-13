@@ -1,15 +1,27 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "",
+
+  "description": "## Project: The Timeless Tower",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "test": "jest --verbose --coverage"
+     "test": "jest --verbose --coverage",
+    "start": "node ./server/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tech-Flamingos/server.git"
+
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
+
+  "bugs": {
+    "url": "https://github.com/Tech-Flamingos/server/issues"
+  },
+  "homepage": "https://github.com/Tech-Flamingos/server#readme",
+
   "dependencies": {
     "chalk": "^4.1.2",
     "dotenv": "^16.0.3",
