@@ -5,12 +5,38 @@ const {Server} = require ('socket.io');
 const PORT = process.env.PORT || 3002;
 const server = new Server ();
 const games = server.of ('/games');
+const base64 = require('base-64');
+var axios = require('axios');
+const apiServerUrl = 'http://localhost:3001/';
 
 let messages = [];
 
 games.on ('connection', socket => {
   console.log ('socket connected to the game namespace', socket.id);
 
+  socket.on ('SIGN-UP', async payload => {
+    let options = {
+      method: 'POST',
+      url: `${apiServerUrl}signup`,
+      data: {name: payload.name, password: payload.password, role: payload.role},
+    };
+    axios.request(options).then(function (response) {
+      console.log(response.data.data);
+      socket.emit('SIGN-UP', response.data.data);
+    });
+  });
+  socket.on ('SIGN-IN', async payload => {
+    let options = {
+      method: 'POST',
+      url: `${apiServerUrl}signin`,
+      Authorization: 'Basic ' + base64.encode(payload.name + ':' + payload.password),
+    };
+    axios.request(options).then(function (response) {
+      console.log(response.data);
+      socket.emit('SIGN-UP', response.data);
+    });
+  });
+  
   socket.on ('JOIN', room => {
     console.log ('room joined:', room);
     socket.join (room);
