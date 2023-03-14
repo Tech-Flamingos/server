@@ -8,10 +8,10 @@ module.exports = (capability) => {
 
       } else {
         next('access denied');
-      };
+      }
       
     } catch (error) {
       next('invalid login');
     }
-  }
-} 
+  };
+};
