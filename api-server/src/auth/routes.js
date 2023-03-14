@@ -9,7 +9,6 @@ const basicAuth = require('./middleware/basic');
 
 authRouter.post('/signup', async(req, res, next) => {
   try {
-    console.log(req.body);
     const userRecord = new UserSchema(req.body);
     await userRecord.save();
     // let userRecord = await userModel.create(req.body);

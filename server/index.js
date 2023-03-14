@@ -6,7 +6,8 @@ const PORT = process.env.PORT || 3002;
 const server = new Server ();
 const games = server.of ('/games');
 const base64 = require('base-64');
-const apiServerUrl = 'http://localhost:3001';
+var axios = require('axios');
+const apiServerUrl = 'http://localhost:3001/';
 
 let messages = [];
 
@@ -14,24 +15,26 @@ games.on ('connection', socket => {
   console.log ('socket connected to the game namespace', socket.id);
 
   socket.on ('SIGN-UP', async payload => {
-    console.log(payload);
     let options = {
       method: 'POST',
-      body: '{"name":"martin","password":"1234","role":"admin"}',
+      url: `${apiServerUrl}signup`,
+      data: {name: payload.name, password: payload.password, role: payload.role},
     };
-    const response = await fetch (`${apiServerUrl}/signup`, options);
-    console.log(response);
-    socket.emit('SIGN-UP', response);
-  });
-  
-  socket.on ('SIGN-IN', async payload => {
-    const response = await fetch ('http://localhost:3001/signin', {
-      method: 'POST',
-      headers: {
-        Authorization: 'Basic ' + base64.encode(payload.name + ':' + payload.password),
-      },
+    axios.request(options).then(function (response) {
+      console.log(response.data.data);
+      socket.emit('SIGN-UP', response.data.data);
     });
-    socket.emit('SIGN-IN', response);
+  });
+  socket.on ('SIGN-IN', async payload => {
+    let options = {
+      method: 'POST',
+      url: `${apiServerUrl}signin`,
+      Authorization: 'Basic ' + base64.encode(payload.name + ':' + payload.password),
+    };
+    axios.request(options).then(function (response) {
+      console.log(response.data);
+      socket.emit('SIGN-UP', response.data);
+    });
   });
   
   socket.on ('JOIN', room => {
