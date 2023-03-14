@@ -17,7 +17,7 @@ games.on ('connection', socket => {
   });
 
   socket.on ('NEW-MESSAGE', async payload => {
-    console.log ('server : new message received' + payload.messages);
+    console.log ('server : new message received' + payload.message);
     const openAIKey = process.env.OPEN_AI_KEY;
     const prompt = `You are a short text-based adventure game AI. Start by asking what kind of adventure game would the human like to play. All the games finish withing 10 turns. 
     ${messages.join ('\n')}
