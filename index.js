@@ -25,6 +25,7 @@ games.on ('connection', socket => {
       socket.emit('SIGN-UP', response.data.data);
     });
   });
+
   socket.on ('SIGN-IN', async payload => {
     let options = {
       method: 'POST',
