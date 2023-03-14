@@ -9,7 +9,7 @@ const server = new Server();
 const games = server.of('/games');
 
 const PORT = process.env.PORT || 3002;
-const apiServerUrl = 'http://localhost:3001/';
+const apiServerUrl = 'http://localhost:3002/';
 const openAIKey = process.env.OPEN_AI_KEY;
 
 let messages = [];
@@ -25,7 +25,7 @@ games.on('connection', socket => {
       data: { name: payload.name, password: payload.password, role: payload.role },
     };
     axios.request(options).then(function (response) {
-      socket.emit('LOGGED-IN', response.data.data);
+      socket.emit('LOGGED-IN', response.data);
     });
   });
 
@@ -48,7 +48,7 @@ games.on('connection', socket => {
   });
 
   socket.on('NEW-MESSAGE', async payload => {
-    console.log('server : new message received' + payload.messages);
+    console.log('server : new message received : ' + payload.message);
     const prompt = `You are a short text-based adventure game AI. Start by asking what kind of adventure game would the human like to play. All the games finish withing 10 turns. 
     ${messages.join('\n')}
     user: ${payload.message}
