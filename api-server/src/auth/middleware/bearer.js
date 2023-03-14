@@ -1,8 +1,8 @@
 'use strict';
 
-const { users } = require('../models/');
+const UserSchema = require('../models/user');
 
-modules.exports = async(req, res, next) => {
+module.exports = async(req, res, next) => {
 
   try {
     if(!req.headers.authorization) {
@@ -10,7 +10,7 @@ modules.exports = async(req, res, next) => {
     
     }
     const token = req.headers.authorization.split(' ').pop();
-    const validUser = await users.authenticateToken(token);
+    const validUser = await UserSchema.methods.authenticateToken(token);
 
     req.users = validUser;
     req.token = validUser.token;
@@ -23,4 +23,4 @@ modules.exports = async(req, res, next) => {
   function _authError() {
     res.status(403).send('invalid login');
   }
-}
+};

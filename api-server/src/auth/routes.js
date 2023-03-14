@@ -2,17 +2,19 @@
 
 const express = require('express');
 const authRouter = express.Router();
-const { users } = require('./models');
+const UserSchema = require('./models/user');
 const basicAuth = require('./middleware/basic');
-const bearerAuth = require('./middleware/bearer');
-const permissions = require('./middleware/acl');
+// const bearerAuth = require('./middleware/bearer');
+// const permissions = require('./middleware/acl');
 
 authRouter.post('/signup', async(req, res, next) => {
   try {
-    let userRecord = await users.create(req.body);
+    const userRecord = new UserSchema(req.body);
+    await userRecord.save();
+    // let userRecord = await userModel.create(req.body);
     const output = {
       user: userRecord, 
-      token: userRecord.token
+      token: userRecord.token,
     };
     res.status(201).json(output);
 
@@ -25,7 +27,7 @@ authRouter.post('/signup', async(req, res, next) => {
 authRouter.post('/signin', basicAuth, (req, res, next) => {
   const user = {
     user: req.user, 
-    token: req.user.token
+    token: req.user.token,
   };
   res.status(200).json(user);
 
