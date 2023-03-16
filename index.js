@@ -9,11 +9,10 @@ const server = new Server();
 const games = server.of('/games');
 
 const PORT = process.env.PORT || 3002;
-const apiServerUrl = 'http://localhost:3002/';
+const apiServerUrl = process.env.API_SERVER ;
 const openAIKey = process.env.OPEN_AI_KEY;
 
 let messages = [];
-
 
 games.on('connection', socket => {
   console.log('socket connected to the game namespace', socket.id);
