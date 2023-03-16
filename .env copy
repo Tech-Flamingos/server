@@ -1,2 +1,2 @@
-PORT=3001
+PORT
 OPEN_AI_KEY=your open ai key
