@@ -40,4 +40,4 @@ Role Based Access Control: user, writer, admin.
 
 ### UML
 
-![midtermUML](/assets/midterm-UML%20(1).png)
+![midtermUML](/assets/midterm-UML.png)
