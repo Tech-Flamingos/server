@@ -48,18 +48,14 @@ games.on('connection', socket => {
 
   socket.on('NEW-MESSAGE', async payload => {
     console.log('server : new message received : ' + payload.message);
-    const prompt = `You are a short text-based adventure game AI. Start by asking what kind of adventure game would the human like to play. All the games finish withing 10 turns. 
-    ${messages.join('\n')}
-    user: ${payload.message}
-    AI:`;
+    const prompt = `You are a short text-based adventure game AI. Start by asking what kind of adventure game would the human like to play. All the games finish withing 10 turns. ${messages.join('\n')} user: ${payload.message} AI:`;
     const completionsUrl = 'https://api.openai.com/v1/completions';
     const maxTokens = 256;
-    //console.log ('OpenAIAPIKEY', openaiApiKey);
 
-    //console.log ('Prompt', prompt);
     try {
-      const response = await fetch(completionsUrl, {
+      let options = {
         method: 'POST',
+        url: completionsUrl,
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${openAIKey}`,
@@ -70,7 +66,8 @@ games.on('connection', socket => {
           max_tokens: maxTokens,
           temperature: 0.7,
         }),
-      });
+      };
+      const response = await axios.request(options);
       const data = await response.json();
       const aiReply = data.choices[0].text.trim();
 
