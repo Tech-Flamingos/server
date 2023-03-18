@@ -12,14 +12,46 @@ const PORT = process.env.PORT || 3002;
 const apiServerUrl = process.env.API_SERVER;
 const openAIKey = process.env.OPEN_AI_KEY;
 
-let messages = [];
+let messagesObj = {};
+//axios client
 const client = axios.create({
   headers: {
     Authorization: 'Bearer ' + openAIKey,
   },
 });
+//Finds all room keys with room in the name.
+//rooms are es6 maps
+function findRooms(socket) {
+  var availableRooms = [];
+  socket.adapter.rooms.forEach((value, key) => {
+    if (key.includes('room')){
+      availableRooms.push(key);
+    }
+  });
+  return availableRooms;
+}
 
-games.on('connection', socket => {
+function aiInit(userRoom){
+  messagesObj[userRoom] = [];
+  messagesObj[userRoom].push({ 'role': 'system', 'content': 'You are a text-based adventure game AI like the choose your own adventure books. Start by giving the user 3 different adventure options. When the user responds continue the story using the users response. then generate 3 options for the user to continue the story numbered 1-3' });
+  const params = {
+    messages: messagesObj[userRoom],
+    model: 'gpt-3.5-turbo',
+    max_tokens: 256,
+    temperature: 0.7,
+  };
+
+  try {
+    client
+      .post('https://api.openai.com/v1/chat/completions', params)
+      .catch((err) => { console.log(err); });
+  } catch (e) {
+    console.log(e.message);
+  }
+  console.log('AI INIT');
+}
+
+games.on('connection', (socket) => {
   console.log('socket connected to the game namespace', socket.id);
 
   socket.on('SIGN-UP', async payload => {
@@ -46,32 +78,22 @@ games.on('connection', socket => {
     });
   });
 
-  socket.on('JOIN', room => {
-    console.log('room joined:', room);
-    socket.join(room);
-  });
-
-
-
   socket.on('NEW-MESSAGE', async payload => {
     console.log('server : new message received : ' + payload.message);
-    const prompt = `You are a short text-based adventure game AI. Start by asking what kind of adventure game would the human like to play. All the games finish withing 10 turns. ${messages.join('\n')} user: ${payload.message} AI:`;
-
+    messagesObj[payload.room].push({ 'role': 'system', 'content': `${payload.message}` });
     const params = {
-      prompt: prompt,
-      model: 'text-davinci-003',
+      messages: messagesObj[payload.room],
+      model: 'gpt-3.5-turbo',
       max_tokens: 256,
-      temperature: 0,
+      temperature: 0.7,
     };
-
     try {
       client
-        .post('https://api.openai.com/v1/completions', params)
-        .then((result) => { 
+        .post('https://api.openai.com/v1/chat/completions', params)
+        .then((result) => {
+          messagesObj[payload.room].push({ 'role': `${result.data.choices[0].message.role}`, 'content': `${result.data.choices[0].message.content}` });
           games.emit('AI-REPLY', {
-            messageId: payload.messageId,
-            message: result.data.choices[0].text.trim(),
-            queueId: payload.queueId,
+            message: result.data.choices[0].message.content,
             event: 'AI-REPLY',
           });
         }).catch((err) => { console.log(err); });
@@ -79,6 +101,29 @@ games.on('connection', socket => {
       console.log(e.message);
     }
   });
+
+  socket.on('NEW-GAME', (payload) => {
+    let userRoom = 'room: ' + payload.user.name;
+    socket.join(userRoom);
+    // aiInit(userRoom);
+    socket.emit('START-GAME', { ...payload, userRoom: userRoom });
+  });
+
+  // socket.on('CONTINUE-GAME', (payload) => {
+  //   socket.join('room: ' + payload.name);
+  // });
+
+  socket.on('VIEW-GAMES', (payload) => {
+    let allRooms = findRooms(socket);
+    socket.emit('ALL-ROOMS', { ...payload, allRooms });
+  });
+
+  socket.on('JOIN-ROOM', (payload) => {
+    console.log(payload);
+    socket.join(payload.userRoom);
+    console.log('Joined', payload.userRoom);
+  });
+
 });
 
 server.listen(PORT);
