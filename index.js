@@ -4,6 +4,7 @@ require('dotenv').config();
 const { Server } = require('socket.io');
 const base64 = require('base-64');
 var axios = require('axios');
+const { response } = require('express');
 
 const server = new Server();
 const games = server.of('/games');
@@ -79,10 +80,11 @@ games.on('connection', (socket) => {
   });
 
   socket.on('NEW-MESSAGE', async payload => {
+    // console.log(messagesObj);
     console.log('server : new message received : ' + payload.message);
-    messagesObj[payload.room].push({ 'role': 'system', 'content': `${payload.message}` });
+    messagesObj[payload.userRoom].push({ 'role': 'user', 'content': `${payload.message}` });
     const params = {
-      messages: messagesObj[payload.room],
+      messages: messagesObj[payload.userRoom],
       model: 'gpt-3.5-turbo',
       max_tokens: 256,
       temperature: 0.7,
@@ -91,10 +93,10 @@ games.on('connection', (socket) => {
       client
         .post('https://api.openai.com/v1/chat/completions', params)
         .then((result) => {
-          messagesObj[payload.room].push({ 'role': `${result.data.choices[0].message.role}`, 'content': `${result.data.choices[0].message.content}` });
-          games.emit('AI-REPLY', {
-            message: result.data.choices[0].message.content,
-            event: 'AI-REPLY',
+          payload.AImessage = result.data.choices[0].message.content;
+          messagesObj[payload.userRoom].push({ 'role': `${result.data.choices[0].message.role}`, 'content': `${result.data.choices[0].message.content}` });
+          games.in(payload.userRoom).emit('AI-REPLY', {
+            ...payload,
           });
         }).catch((err) => { console.log(err); });
     } catch (e) {
@@ -105,7 +107,7 @@ games.on('connection', (socket) => {
   socket.on('NEW-GAME', (payload) => {
     let userRoom = 'room: ' + payload.user.name;
     socket.join(userRoom);
-    // aiInit(userRoom);
+    aiInit(userRoom);
     socket.emit('START-GAME', { ...payload, userRoom: userRoom });
   });
 
@@ -119,9 +121,9 @@ games.on('connection', (socket) => {
   });
 
   socket.on('JOIN-ROOM', (payload) => {
-    console.log(payload);
     socket.join(payload.userRoom);
     console.log('Joined', payload.userRoom);
+    socket.emit('START-GAME', payload);
   });
 
 });
